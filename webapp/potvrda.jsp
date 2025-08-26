@@ -48,13 +48,16 @@
                                 </div>
                                 <%-- Uklanjamo poruku iz sesije da se ne bi prikazivala ponovo --%>
                                 <c:remove var="poruka" scope="session"/>
+                                <c:remove var="poslednjaNarudzbinaId" scope="session"/>
+                                <c:remove var="poslednjaAdresaDostave" scope="session"/>
                             </c:if>
+
+                            <a href="${pageContext.request.contextPath}/meni" class="btn btn-primary mt-3">Vrati se na Meni</a>
+                            <a href="${pageContext.request.contextPath}/istorija-narudzbina" class="btn btn-secondary mt-3">Pregledaj moje narudžbine</a>
                         </p>
-                        <a href="meni" class="btn btn-primary">Vrati se na Meni</a>
-                        <a href="#" class="btn btn-secondary">Pregledaj moje narudžbine</a>
                     </div>
                     <div class="card-footer text-muted">
-                        Hvala vam na poverenju!
+                        Vaš Ketering Servis
                     </div>
                 </div>
             </div>

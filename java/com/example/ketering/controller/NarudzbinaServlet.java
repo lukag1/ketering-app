@@ -45,7 +45,6 @@ public class NarudzbinaServlet extends HttpServlet {
             return;
         }
         
-        // Preuzimanje adrese iz forme
         String adresaDostave = request.getParameter("adresaDostave");
         if (adresaDostave == null || adresaDostave.trim().isEmpty()) {
             request.setAttribute("greska", "Adresa za dostavu je obavezna.");
@@ -53,30 +52,27 @@ public class NarudzbinaServlet extends HttpServlet {
             return;
         }
 
-        // 1. Kreiranje narudžbine sa ispravnim tipovima podataka
         BigDecimal ukupnaCena = korpa.values().stream()
                                      .map(stavka -> BigDecimal.valueOf(stavka.getProizvod().getCena()).multiply(BigDecimal.valueOf(stavka.getKolicina())))
                                      .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         Narudzbina narudzbina = new Narudzbina();
         narudzbina.setKorisnikId(korisnik.getId());
-        narudzbina.setDatum(new Timestamp(System.currentTimeMillis())); // ISPRAVKA: Koristi se Timestamp
-        narudzbina.setUkupnaCena(ukupnaCena); // ISPRAVKA: Koristi se BigDecimal
-        narudzbina.setAdresaDostave(adresaDostave); // DODATO: Postavljanje adrese
+        narudzbina.setDatum(new Timestamp(System.currentTimeMillis())); 
+        narudzbina.setUkupnaCena(ukupnaCena); 
+        narudzbina.setAdresaDostave(adresaDostave); 
         narudzbina.setStatus("U obradi");
 
-        // 2. Priprema liste stavki za upis u bazu
         List<StavkaNarudzbine> stavkeNarudzbine = new ArrayList<>();
         for (StavkaKorpe stavkaKorpe : korpa.values()) {
             StavkaNarudzbine stavkaNarudzbine = new StavkaNarudzbine();
             stavkaNarudzbine.setProizvodId(stavkaKorpe.getProizvod().getId());
             stavkaNarudzbine.setKolicina(stavkaKorpe.getKolicina());
-            // ISPRAVKA: Ispravan naziv metode i konverzija u BigDecimal
+            
             stavkaNarudzbine.setCenaPoKomadu(BigDecimal.valueOf(stavkaKorpe.getProizvod().getCena()));
             stavkeNarudzbine.add(stavkaNarudzbine);
         }
 
-        // 3. Čuvanje kompletne narudžbine kroz transakciju
         boolean uspeh = narudzbinaDAO.saveKompletnaNarudzbina(narudzbina, stavkeNarudzbine);
 
         if (uspeh) {

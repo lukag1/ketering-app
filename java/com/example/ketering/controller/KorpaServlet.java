@@ -1,7 +1,7 @@
 package com.example.ketering.controller;
 
 import java.io.IOException;
-import java.sql.SQLException; // Import potreban za hvatanje greške
+import java.sql.SQLException; 
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,19 +36,19 @@ public class KorpaServlet extends HttpServlet {
             } else if ("ukloni".equals(akcija)) {
                 ukloniIzKorpe(request, response);
             }
-            // Ovde će kasnije doći i druge akcije kao "ažuriraj"...
+            
         } catch (SQLException e) {
-            // Uhvati grešku iz baze i prijavi je kao serversku grešku
+            
             throw new ServletException("Greška pri radu sa bazom podataka u korpi.", e);
         }
     }
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Prikazuje stranicu korpe
+        
         request.getRequestDispatcher("/korpa.jsp").forward(request, response);
     }
 
-    // Dodajemo "throws SQLException" u potpis metode
+    
     private void dodajUKorpu(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
         HttpSession session = request.getSession();
         
@@ -65,7 +65,7 @@ public class KorpaServlet extends HttpServlet {
             if (postojecaStavka != null) {
                 postojecaStavka.setKolicina(postojecaStavka.getKolicina() + 1);
             } else {
-                // Ovaj poziv može baciti SQLException
+                
                 Proizvod proizvod = proizvodDAO.getProizvodById(proizvodId);
                 if (proizvod != null) {
                     korpa.put(proizvodId, new StavkaKorpe(proizvod, 1));
@@ -75,7 +75,7 @@ public class KorpaServlet extends HttpServlet {
             session.setAttribute("korpa", korpa);
 
         } catch (NumberFormatException e) {
-            // Greška ako proizvodId nije validan broj, ispisujemo je ali ne prekidamo aplikaciju
+            
             e.printStackTrace();
         }
         

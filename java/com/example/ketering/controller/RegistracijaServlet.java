@@ -1,5 +1,8 @@
 package com.example.ketering.controller;
 
+import java.io.IOException;
+import java.sql.SQLException;
+
 import com.example.ketering.dao.KorisnikDAO;
 import com.example.ketering.model.Korisnik;
 
@@ -8,9 +11,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-import java.sql.SQLException;
 
 @WebServlet("/registracija")
 public class RegistracijaServlet extends HttpServlet {
@@ -23,7 +23,6 @@ public class RegistracijaServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Prosleđuje na JSP stranicu za prikaz forme
         req.getRequestDispatcher("/registracija.jsp").forward(req, resp);
     }
 
@@ -35,7 +34,6 @@ public class RegistracijaServlet extends HttpServlet {
         String lozinka = request.getParameter("lozinka");
         String potvrdaLozinke = request.getParameter("potvrdaLozinke");
 
-        // Validacija
         if (!lozinka.equals(potvrdaLozinke)) {
             request.setAttribute("greska", "Lozinke se ne poklapaju.");
             request.getRequestDispatcher("/registracija.jsp").forward(request, response);
@@ -53,7 +51,7 @@ public class RegistracijaServlet extends HttpServlet {
             noviKorisnik.setIme(ime);
             noviKorisnik.setPrezime(prezime);
             noviKorisnik.setEmail(email);
-            noviKorisnik.setLozinka(lozinka); // U realnoj aplikaciji, ovde bi se lozinka heširala
+            noviKorisnik.setLozinka(lozinka); 
 
             korisnikDAO.addKorisnik(noviKorisnik);
 

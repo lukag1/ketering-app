@@ -25,7 +25,6 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Prosleđuje na JSP stranicu za prikaz forme
         req.getRequestDispatcher("/login.jsp").forward(req, resp);
     }
 
@@ -38,24 +37,20 @@ public class LoginServlet extends HttpServlet {
             Korisnik korisnik = korisnikDAO.getKorisnikByEmailAndLozinka(email, lozinka);
 
             if (korisnik != null) {
-                // Korisnik pronađen, kreiraj sesiju
                 HttpSession session = request.getSession();
                 session.setAttribute("korisnik", korisnik);
 
-                // Preusmeravanje na osnovu uloge
                 String ulogaNaziv = korisnik.getUloga().getNaziv();
 
                 if ("admin".equalsIgnoreCase(ulogaNaziv)) {
                     response.sendRedirect(request.getContextPath() + "/admin/admin.jsp");
                 } else if ("menadzer".equalsIgnoreCase(ulogaNaziv) || "menadžer".equalsIgnoreCase(ulogaNaziv)) {
-                    // Menadžera preusmeravamo direktno na upravljanje proizvodima
                     response.sendRedirect(request.getContextPath() + "/admin/admin.jsp");
-                } else { // Klijent i ostali
+                } else { 
                     response.sendRedirect(request.getContextPath() + "/meni");
                 }
 
             } else {
-                // Korisnik nije pronađen ili je lozinka netačna
                 request.setAttribute("errorMessage", "Pogrešan email ili lozinka.");
                 request.getRequestDispatcher("/login.jsp").forward(request, response);
             }

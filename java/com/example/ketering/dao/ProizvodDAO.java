@@ -12,10 +12,6 @@ import com.example.ketering.util.DatabaseConnection;
 
 public class ProizvodDAO {
 
-    /**
-     * Dohvata sve proizvode iz baze podataka.
-     * @return Lista svih proizvoda.
-     */
     public List<Proizvod> getSviProizvodi() throws SQLException {
         List<Proizvod> listaProizvoda = new ArrayList<>();
         String sql = "SELECT * FROM proizvodi";
@@ -29,17 +25,12 @@ public class ProizvodDAO {
                 listaProizvoda.add(proizvod);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            
             throw e;
         }
         return listaProizvoda;
     }
 
-    /**
-     * Dohvata jedan proizvod iz baze podataka na osnovu njegovog ID-a.
-     * @param id ID proizvoda koji se traži.
-     * @return Proizvod objekat ako je pronađen, u suprotnom null.
-     */
     public Proizvod getProizvodById(int id) throws SQLException {
         Proizvod proizvod = null;
         String sql = "SELECT * FROM proizvodi WHERE id = ?";
@@ -54,16 +45,12 @@ public class ProizvodDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            
             throw e;
         }
         return proizvod;
     }
 
-    /**
-     * Dodaje novi proizvod u bazu.
-     * @param proizvod Objekat Proizvod koji treba dodati.
-     */
     public void addProizvod(Proizvod proizvod) throws SQLException {
         String sql = "INSERT INTO proizvodi (naziv, opis, cena, tip) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -75,16 +62,11 @@ public class ProizvodDAO {
             ps.setString(4, proizvod.getTip());
             ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            
             throw e;
         }
     }
 
-    /**
-     * Ažurira postojeći proizvod u bazi.
-     * @param proizvod Objekat Proizvod sa ažuriranim podacima.
-     * @return true ako je ažuriranje uspešno, false inače.
-     */
     public boolean updateProizvod(Proizvod proizvod) throws SQLException {
         String sql = "UPDATE proizvodi SET naziv = ?, opis = ?, cena = ?, tip = ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -98,16 +80,11 @@ public class ProizvodDAO {
             
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            
             throw e;
         }
     }
 
-    /**
-     * Briše proizvod iz baze na osnovu njegovog ID-a.
-     * @param id ID proizvoda koji treba obrisati.
-     * @return true ako je brisanje uspešno, false inače.
-     */
     public boolean deleteProizvod(int id) throws SQLException {
         String sql = "DELETE FROM proizvodi WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -116,14 +93,11 @@ public class ProizvodDAO {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            
             throw e;
         }
     }
 
-    /**
-     * Pomoćna metoda za mapiranje reda iz ResultSet-a u Proizvod objekat.
-     */
     private Proizvod mapRowToProizvod(ResultSet rs) throws SQLException {
         Proizvod proizvod = new Proizvod();
         proizvod.setId(rs.getInt("id"));
@@ -131,15 +105,10 @@ public class ProizvodDAO {
         proizvod.setOpis(rs.getString("opis"));
         proizvod.setCena(rs.getDouble("cena"));
         proizvod.setTip(rs.getString("tip"));
-        // UKLONJENO: proizvod.setSlikaUrl(rs.getString("slika_url"));
+        
         return proizvod;
     }
 
-    /**
-     * Dohvata najprodavanije proizvode na osnovu broja narudžbina.
-     * @param limit Broj najprodavanijih proizvoda koji se vraća.
-     * @return Lista najprodavanijih proizvoda.
-     */
     public List<Proizvod> getNajprodavanijiProizvodi(int limit) throws SQLException {
         List<Proizvod> proizvodi = new ArrayList<>();
         String sql = "SELECT p.*, SUM(sn.kolicina) AS ukupno_prodato " +
@@ -156,8 +125,8 @@ public class ProizvodDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Proizvod proizvod = mapRowToProizvod(rs);
-                    // Možete dodati i količinu ako želite da je prikažete
-                    // proizvod.setUkupnoProdato(rs.getInt("ukupno_prodato")); 
+                    
+                    
                     proizvodi.add(proizvod);
                 }
             }

@@ -1,7 +1,4 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.util.List" %>
-<%@ page import="com.example.ketering.model.Proizvod" %>
-<%@ page import="com.example.ketering.model.Korisnik" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
@@ -12,7 +9,8 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <!-- Uključujemo centralnu navigaciju -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">Ketering Servis</a>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
@@ -54,60 +52,55 @@
 
         <c:if test="${empty sessionScope.korpa or empty sessionScope.korpa.values()}">
             <div class="alert alert-info" role="alert">
-                Vaša korpa je prazna. <a href="meni" class="alert-link">Vratite se na meni</a> da dodate proizvode.
+                Vaša korpa je prazna. <a href="${pageContext.request.contextPath}/meni" class="alert-link">Vratite se na meni</a> da dodate proizvode.
             </div>
         </c:if>
 
         <c:if test="${not empty sessionScope.korpa.values()}">
-            <table class="table table-hover">
-                <thead class="thead-light">
-                    <tr>
-                        <th>Proizvod</th>
-                        <th>Cena po komadu</th>
-                        <th>Količina</th>
-                        <th>Ukupno</th>
-                        <th>Akcija</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:set var="ukupnaSuma" value="0" />
-                    <c:forEach var="stavka" items="${sessionScope.korpa.values()}">
+            <!-- Tabela sa proizvodima -->
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-light">
                         <tr>
-                            <td><c:out value="${stavka.proizvod.naziv}"/></td>
-                            <td><fmt:formatNumber type="number" minFractionDigits="2" maxFractionDigits="2" value="${stavka.proizvod.cena}"/> RSD</td>
-                            <td><c:out value="${stavka.kolicina}"/></td>
-                            <td><fmt:formatNumber type="number" minFractionDigits="2" maxFractionDigits="2" value="${stavka.ukupnaCena}"/> RSD</td>
-                            <td>
-                                <form action="korpa" method="post" style="display: inline;">
-                                    <input type="hidden" name="akcija" value="ukloni">
-                                    <input type="hidden" name="proizvodId" value="${stavka.proizvod.id}">
-                                    <button type="submit" class="btn btn-danger btn-sm">Ukloni</button>
-                                </form>
-                            </td>
+                            <th>Proizvod</th>
+                            <th class="text-right">Cena po komadu</th>
+                            <th class="text-center">Količina</th>
+                            <th class="text-right">Ukupno</th>
+                            <th class="text-center">Akcija</th>
                         </tr>
-                        <c:set var="ukupnaSuma" value="${ukupnaSuma + stavka.ukupnaCena}" />
-                    </c:forEach>
-                </tbody>
-                <tfoot>
-                    <tr class="table-info">
-                        <td colspan="3" class="text-right"><strong>Ukupno za plaćanje:</strong></td>
-                        <td colspan="2"><strong><fmt:formatNumber type="number" minFractionDigits="2" maxFractionDigits="2" value="${ukupnaSuma}"/> RSD</strong></td>
-                    </tr>
-                </tfoot>
-            </table>
-            <div class="text-right">
-                <form action="narudzbina" method="post">
-                    <button type="submit" class="btn btn-success">Nastavi na plaćanje</button>
-                </form>
+                    </thead>
+                    <tbody>
+                        <c:set var="ukupnaSuma" value="0" />
+                        <c:forEach var="stavka" items="${sessionScope.korpa.values()}">
+                            <tr>
+                                <td><c:out value="${stavka.proizvod.naziv}"/></td>
+                                <td class="text-right"><fmt:formatNumber type="number" minFractionDigits="2" maxFractionDigits="2" value="${stavka.proizvod.cena}"/> RSD</td>
+                                <td class="text-center"><c:out value="${stavka.kolicina}"/></td>
+                                <td class="text-right"><fmt:formatNumber type="number" minFractionDigits="2" maxFractionDigits="2" value="${stavka.ukupnaCena}"/> RSD</td>
+                                <td class="text-center">
+                                    <form action="${pageContext.request.contextPath}/korpa" method="post" style="display: inline;">
+                                        <input type="hidden" name="akcija" value="ukloni">
+                                        <input type="hidden" name="proizvodId" value="${stavka.proizvod.id}">
+                                        <button type="submit" class="btn btn-danger btn-sm">Ukloni</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <c:set var="ukupnaSuma" value="${ukupnaSuma + stavka.ukupnaCena}" />
+                        </c:forEach>
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-info">
+                            <td colspan="3" class="text-right"><strong>Ukupno za plaćanje:</strong></td>
+                            <td colspan="2" class="text-right"><strong><fmt:formatNumber type="number" minFractionDigits="2" maxFractionDigits="2" value="${ukupnaSuma}"/> RSD</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
-        </c:if>
 
-        <c:if test="${not empty korpa}">
+            <!-- Forma za završetak narudžbine -->
             <div class="card mt-4">
                 <div class="card-body">
                     <h5 class="card-title">Završite narudžbinu</h5>
-                    
-                    <!-- Forma koja šalje podatke na NarudzbinaServlet -->
                     <form action="${pageContext.request.contextPath}/narudzbina" method="post">
                         <div class="form-group">
                             <label for="adresaDostave">Adresa za dostavu:</label>
@@ -118,12 +111,17 @@
                             <div class="alert alert-danger">${greska}</div>
                         </c:if>
 
-                        <button type="submit" class="btn btn-success btn-lg">Potvrdi i Naruči</button>
+                        <button type="submit" class="btn btn-success btn-lg btn-block">Potvrdi i Naruči</button>
                     </form>
                 </div>
             </div>
         </c:if>
     </div>
+
+    <!-- Skripte za Bootstrap funkcionalnosti -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 </body>
 </html>

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.ketering.model.Korisnik;
-import com.example.ketering.model.Uloga;
+import com.example.ketering.model.Uloga; 
 import com.example.ketering.util.DatabaseConnection;
 
 public class KorisnikDAO {
@@ -31,32 +31,41 @@ public class KorisnikDAO {
 
     public Korisnik getKorisnikByEmail(String email) throws SQLException {
         Korisnik korisnik = null;
-        // ISPRAVKA: SQL sada koristi JOIN da dohvati i ulogu
+        
         String sql = "SELECT k.id, k.ime, k.prezime, k.email, k.lozinka, u.id as uloga_id, u.naziv as uloga_naziv FROM korisnici k JOIN uloge u ON k.uloga_id = u.id WHERE k.email = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                // ISPRAVKA: Koristi se pomoćna metoda za mapiranje
+                
                 korisnik = mapRowToKorisnik(rs);
             }
         }
         return korisnik;
     }
 
-    // ISPRAVKA: Samo jedna 'addKorisnik' metoda koja je sada ispravna
+    
     public void addKorisnik(Korisnik korisnik) throws SQLException {
-        // Pretpostavka: uloga 'klijent' u tabeli 'uloge' ima ID = 2
+        
         String sql = "INSERT INTO korisnici (ime, prezime, email, lozinka, uloga_id) VALUES (?, ?, ?, ?, ?)";
+        
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+            
             ps.setString(1, korisnik.getIme());
             ps.setString(2, korisnik.getPrezime());
             ps.setString(3, korisnik.getEmail());
             ps.setString(4, korisnik.getLozinka());
-            // Svi novoregistrovani korisnici dobijaju ulogu 'klijent' (ID=2)
-            ps.setInt(5, 2); 
+
+            
+            
+            
+            if (korisnik.getUloga() != null && korisnik.getUloga().getId() > 0) {
+                ps.setInt(5, korisnik.getUloga().getId());
+            } else {
+                ps.setInt(5, 1); 
+            }
             ps.executeUpdate();
         }
     }
@@ -129,7 +138,7 @@ public class KorisnikDAO {
         return uloge;
     }
 
-    // DODAJEMO METODU KOJA NEDOSTAJE
+    
     public Korisnik getKorisnikByEmailAndLozinka(String email, String lozinka) throws SQLException {
         Korisnik korisnik = null;
         String sql = "SELECT k.*, u.naziv AS naziv_uloge FROM korisnici k JOIN uloge u ON k.uloga_id = u.id WHERE k.email = ? AND k.lozinka = ?";
@@ -158,7 +167,7 @@ public class KorisnikDAO {
         return korisnik;
     }
 
-    // Pomoćna metoda da se izbegne ponavljanje koda
+    
     private Korisnik mapRowToKorisnik(ResultSet rs) throws SQLException {
         Korisnik korisnik = new Korisnik();
         korisnik.setId(rs.getInt("id"));

@@ -17,19 +17,20 @@ import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/istorija-narudzbina")
 public class IstorijaNarudzbinaServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
     private NarudzbinaDAO narudzbinaDAO;
 
+    @Override
     public void init() {
         narudzbinaDAO = new NarudzbinaDAO();
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         Korisnik korisnik = (session != null) ? (Korisnik) session.getAttribute("korisnik") : null;
 
         if (korisnik == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            response.sendRedirect("login.jsp");
             return;
         }
 
